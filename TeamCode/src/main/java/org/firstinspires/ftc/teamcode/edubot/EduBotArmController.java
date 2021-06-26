@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.edubot;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Func;
@@ -16,10 +18,13 @@ import org.firstinspires.ftc.teamcode.paladins.common.PaladinsOpMode;
  */
 public class EduBotArmController extends PaladinsComponent {
 
-    private final ButtonControl forwardButtonControl;
-    private final ButtonControl reverseButtonControl;
+    private final ButtonControl armUpButtonControl;
+    private final ButtonControl armDownButtonControl;
+    private final ButtonControl armClawOpenControl;
+    private final ButtonControl armClawCloseControl;
 
-    private final DcMotor motor;
+    private final DcMotor armMotor;
+    private final Servo clawServo;
     private final Gamepad gamepad;
     private final TouchSensor stopSensor;
     private final float motorPower;
@@ -32,28 +37,28 @@ public class EduBotArmController extends PaladinsComponent {
      * @param opMode
      * @param gamepad              Gamepad
      * @param config               EduBotConfiguration
-     * @param forwardButtonControl {@link ButtonControl}
-     * @param reverseButtonControl {@link ButtonControl}
      * @param power                power to apply when using gamepad buttons
      * @param showTelemetry        display the power values on the telemetry
      */
     public EduBotArmController(PaladinsOpMode opMode, Gamepad gamepad, EduBotConfiguration config,
-                               ButtonControl forwardButtonControl, ButtonControl reverseButtonControl,
                                float power, boolean showTelemetry) {
         super(opMode);
 
         this.gamepad = gamepad;
-        this.motor = config.armMotor;
-        this.forwardButtonControl = forwardButtonControl;
-        this.reverseButtonControl = reverseButtonControl;
+        this.armMotor = config.armMotor;
+        this.clawServo = config.armServo;
+        this.armUpButtonControl = ButtonControl.DPAD_UP;
+        this.armDownButtonControl = ButtonControl.DPAD_DOWN;
+        this.armClawOpenControl = ButtonControl.DPAD_LEFT;
+        this.armClawCloseControl = ButtonControl.DPAD_RIGHT;
         this.motorPower = power;
         this.stopSensor = config.touchSensor;
 
         if (showTelemetry) {
-            item = opMode.telemetry.addData("Arm " + forwardButtonControl.name() + "/" + reverseButtonControl, new Func<Double>() {
+            item = opMode.telemetry.addData("Arm " + armUpButtonControl.name() + "/" + armDownButtonControl.name(), new Func<Double>() {
                 @Override
                 public Double value() {
-                    return motor.getPower();
+                    return armMotor.getPower();
                 }
             });
             item.setRetained(true);
@@ -64,23 +69,30 @@ public class EduBotArmController extends PaladinsComponent {
 
 
     public EduBotArmController(PaladinsOpMode opMode, Gamepad gamepad, EduBotConfiguration config,
-                               ButtonControl forwardButtonControl, ButtonControl reverseButtonControl,
-                               float power) {
-        this(opMode, gamepad, config, forwardButtonControl, reverseButtonControl, power, true);
+                                                              float power) {
+        this(opMode, gamepad, config,  power, true);
     }
 
     /**
      * Update motors with latest gamepad state
      */
     public void update() {
-        if (buttonPressed(gamepad, forwardButtonControl)) {
-            motor.setPower(motorPower);
+        // Arm
+        if (buttonPressed(gamepad, armUpButtonControl)) {
+            armMotor.setPower(motorPower);
         } else  if (stopSensor != null && stopSensor.isPressed()) {
-            motor.setPower(0.0);
-        } else if (buttonPressed(gamepad, reverseButtonControl)) {
-            motor.setPower(-motorPower);
+            armMotor.setPower(0.0);
+        } else if (buttonPressed(gamepad, armDownButtonControl)) {
+            armMotor.setPower(-motorPower);
         } else {
-            motor.setPower(0.0);
+            armMotor.setPower(0.0);
+        }
+
+        // Claw
+        if (buttonPressed(gamepad, armClawOpenControl)) {
+            clawServo.setPosition(0.6);
+        } else if (buttonPressed(gamepad, armClawCloseControl)) {
+            clawServo.setPosition(0.8);
         }
     }
 }

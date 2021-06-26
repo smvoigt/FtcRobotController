@@ -21,8 +21,7 @@ public class EduBotTeleOpTankDrive extends PaladinsOpMode {
         config = EduBotConfiguration.newConfig(hardwareMap, telemetry);
 
         drive = new TankDrive(this, gamepad1, config.leftMotor, config.rightMotor);
-        armLift = new EduBotArmController(this, gamepad1, config,
-                ButtonControl.DPAD_UP, ButtonControl.DPAD_DOWN, 0.2f, true);
+        armLift = new EduBotArmController(this, gamepad1, config,0.2f, true);
     }
 
     @Override
