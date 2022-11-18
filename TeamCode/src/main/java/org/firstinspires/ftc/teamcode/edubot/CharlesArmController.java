@@ -28,6 +28,7 @@ public class CharlesArmController extends PaladinsComponent {
     private final TouchSensor stopSensor;
     private final float motorPower;
     private final Telemetry.Item item;
+    private final Telemetry.Item item2;
     private boolean showtelemetry = false;
 
     /**
@@ -46,10 +47,10 @@ public class CharlesArmController extends PaladinsComponent {
         this.gamepad = gamepad;
         this.armMotor = config.armMotor;
         this.clawServo = config.armServo;
-        this.armUpButtonControl = ButtonControl.DPAD_UP;
-        this.armDownButtonControl = ButtonControl.DPAD_DOWN;
-        this.armClawOpenControl = ButtonControl.DPAD_LEFT;
-        this.armClawCloseControl = ButtonControl.DPAD_RIGHT;
+        this.armUpButtonControl = ButtonControl.A;
+        this.armDownButtonControl = ButtonControl.B;
+        this.armClawOpenControl = ButtonControl.X;
+        this.armClawCloseControl = ButtonControl.Y;
         this.motorPower = power;
         this.stopSensor = config.touchSensor;
 
@@ -61,9 +62,20 @@ public class CharlesArmController extends PaladinsComponent {
                 }
             });
             item.setRetained(true);
+
+            item2 = opMode.telemetry.addData("Claw " + armClawOpenControl.name() + "/" + armClawCloseControl.name(), new Func<Double>() {
+                @Override
+                public Double value() {
+                    return clawServo.getPosition();
+                }
+            });
+            item2.setRetained(true);
         } else {
             item = null;
+            item2 = null;
         }
+
+        clawServo.setPosition(0.5);
     }
 
 
@@ -89,7 +101,7 @@ public class CharlesArmController extends PaladinsComponent {
 
         // Claw
         if (buttonPressed(gamepad, armClawOpenControl)) {
-            clawServo.setPosition(0.6);
+            clawServo.setPosition(0.1);
         } else if (buttonPressed(gamepad, armClawCloseControl)) {
             clawServo.setPosition(0.8);
         }

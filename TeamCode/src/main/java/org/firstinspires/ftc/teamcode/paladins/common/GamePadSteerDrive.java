@@ -15,7 +15,7 @@ public class GamePadSteerDrive extends PaladinsComponent {
     private static float[] power_curve =
             {0.00f, 0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.5f, 1.0f};
     private static float[] steer_curve =
-            {0.00f, 0.2f, 0.3f, 0.4f, 0.45f, 0.5f, 0.55f, 0.6f};
+            {0.05f, 0.1f, 0.15f, 0.2f, 0.3f, 0.4f, 0.7f, 1.0f};
     final private DcMotor leftMotor;
     final private DcMotor rightMotor;
     final private Gamepad gamepad;
