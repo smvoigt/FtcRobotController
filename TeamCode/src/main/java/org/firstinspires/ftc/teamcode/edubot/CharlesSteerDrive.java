@@ -16,7 +16,6 @@ public class CharlesSteerDrive extends PaladinsOpMode {
     @Override
     protected void onInit() {
         config = CharlesConfiguration.newConfig(hardwareMap, telemetry);
-
         drive = new GamePadSteerDrive(this, gamepad1, config.leftMotor, config.rightMotor);
         armLift = new CharlesArmController(this, gamepad1, config,0.3f, true);
     }
